@@ -124,15 +124,14 @@ class CtpGateway(VtGateway):
             brokerID = str(setting['brokerID'])
             tdAddress = str(setting['tdAddress'])
             mdAddress = str(setting['mdAddress'])
+            userProductInfo = str(setting['userProductInfo'])
             
             # 如果json文件提供了验证码
             if 'authCode' in setting: 
                 authCode = str(setting['authCode'])
-                userProductInfo = str(setting['userProductInfo'])
                 self.tdApi.requireAuthentication = True
             else:
                 authCode = None
-                userProductInfo = None
 
         except KeyError:
             log = VtLogData()
@@ -1398,6 +1397,7 @@ class CtpTdApi(TdApi):
             req['UserID'] = self.userID
             req['Password'] = self.password
             req['BrokerID'] = self.brokerID
+            req['UserProductInfo'] = self.userProductInfo
             self.reqID += 1
             self.reqUserLogin(req, self.reqID)   
             
