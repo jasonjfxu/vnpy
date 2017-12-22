@@ -177,12 +177,32 @@ class SniperAlgo(StAlgoTemplate):
         self.hedgingTaskDict = {}           # 被动腿需要对冲的数量字典  vtSymbol:volume
         self.legOrderDict = {}              # vtSymbol: list of vtOrderID       
         self.orderTradedDict = {}           # vtOrderID: tradedVolume
+
+        self.minSellPriceSession = 8888
+        self.maxBuyPriceSession = -8888
+        self.minSellPriceSession1 = 8888
+        self.maxBuyPriceSession1 = -8888
         
     #----------------------------------------------------------------------
     def updateSpreadTick(self, spread):
         """价差行情更新"""
         self.spread = spread
-        
+
+        if spread.name == "RB.05-10":
+            if spread.bidPrice > self.maxBuyPriceSession and spread.bidPrice < 600:
+                self.maxBuyPriceSession = spread.bidPrice
+                print("RB %s:min=%.1f, max=%.1f" % (spread.time, self.minSellPriceSession, self.maxBuyPriceSession))
+            if spread.askPrice < self.minSellPriceSession and spread.askPrice > 0:
+                self.minSellPriceSession = spread.askPrice
+                print("RB %s:min=%.1f, max=%.1f" % (spread.time, self.minSellPriceSession, self.maxBuyPriceSession))
+        if spread.name == "HC.05-10":
+            if spread.bidPrice > self.maxBuyPriceSession1 and spread.bidPrice < 600:
+                self.maxBuyPriceSession1 = spread.bidPrice
+                print("HC %s:min=%.1f, max=%.1f" % (spread.time, self.minSellPriceSession1, self.maxBuyPriceSession1))
+            if spread.askPrice < self.minSellPriceSession1 and spread.askPrice > 0:
+                self.minSellPriceSession1 = spread.askPrice
+                print("HC %s:min=%.1f, max=%.1f" % (spread.time, self.minSellPriceSession1, self.maxBuyPriceSession1))
+
         # 若算法没有启动则直接返回
         if not self.active:
             return

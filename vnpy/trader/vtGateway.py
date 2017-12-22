@@ -90,8 +90,16 @@ class VtGateway(object):
         # 通用事件
         event1 = Event(type_=EVENT_ERROR)
         event1.dict_['data'] = error
-        self.eventEngine.put(event1)    
-        
+        self.eventEngine.put(event1)
+
+    # ----------------------------------------------------------------------
+    def onDisconn(self, error):
+        """服务器断开信息推送"""
+        # 通用事件
+        event1 = Event(type_=EVENT_DISCONN)
+        event1.dict_['data'] = error
+        self.eventEngine.put(event1)
+
     #----------------------------------------------------------------------
     def onLog(self, log):
         """日志推送"""

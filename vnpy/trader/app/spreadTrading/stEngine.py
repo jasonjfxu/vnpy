@@ -7,7 +7,7 @@ import shelve
 from vnpy.event import Event
 from vnpy.trader.vtFunction import getJsonPath, getTempPath
 from vnpy.trader.vtEvent import (EVENT_TICK, EVENT_TRADE, EVENT_POSITION, 
-                                 EVENT_TIMER, EVENT_ORDER)
+                                 EVENT_TIMER, EVENT_ORDER, EVENT_DISCONN)
 from vnpy.trader.vtObject import (VtSubscribeReq, VtOrderReq, 
                                   VtCancelOrderReq, VtLogData)
 from vnpy.trader.vtConstant import (DIRECTION_LONG, DIRECTION_SHORT, 
@@ -303,7 +303,8 @@ class StAlgoEngine(object):
         self.eventEngine.register(EVENT_TRADE, self.processTradeEvent)
         self.eventEngine.register(EVENT_ORDER, self.processOrderEvent)
         self.eventEngine.register(EVENT_TIMER, self.processTimerEvent)
-    
+        self.eventEngine.register(EVENT_DISCONN, self.processDisconnEvent)
+
     #----------------------------------------------------------------------
     def processSpreadTickEvent(self, event):
         """处理价差行情事件"""
@@ -345,6 +346,12 @@ class StAlgoEngine(object):
         """"""
         for algo in self.algoDict.values():
             algo.updateTimer()
+
+    # ----------------------------------------------------------------------
+    def processDisconnEvent(self, event):
+        print('stAlgoEngine: processDisconnEvent')
+        # 服务器断开重连时可能会产生异常的价差，停止所有STAlgo
+        self.stopAll()
 
     #----------------------------------------------------------------------
     def sendOrder(self, vtSymbol, direction, offset, price, volume, payup=0):
